@@ -28,7 +28,7 @@ namespace Registro.Models
             Fecha = fecha;
             Hallazgo = hallazgo;
             Ruta = ruta;
-            Importancia = importanciah;
+            Importancia = importancia;
         }
 
         public Errores()
