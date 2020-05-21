@@ -1,0 +1,141 @@
+﻿@page "/error2"
+@page "/error2/{ErrorId:int}"
+
+@using Models
+@using Registro.BLL;
+
+
+@inject IToastService toast
+
+<EditForm Model="Error" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="card">
+        <div class="card-header">
+            <h3>Errores</h3>
+        </div>
+
+        <div class="card-body">
+            <form>
+                @*ErrorId*@
+                <div class="form-row align-items-center">
+                    <div class="col">
+                        <div class="form-group">
+                            <label>ErrorId</label>
+                            <div class="input-group">
+                                <InputNumber @bind-Value="Error.ErrorId" class="form-control col-4"></InputNumber>
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-primary input-group-text" @onclick="Buscar">Buscar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @*Fecha*@
+                <div class="form-group">
+                    <label>Fecha</label>
+                    <InputDate @bind-Value="Error.Fecha"
+                               class="form-control"></InputDate>
+                    <ValidationMessage For="@(()=>Error.Fecha)" />
+                </div>
+
+                @*Hallazgo*@
+                <div class="form-group">
+                    <label>Hallazgo</label>
+                    <InputTextArea @bind-Value="Error.Hallazgo"
+                                   class="form-control"></InputTextArea>
+                    <ValidationMessage For="@(()=>Error.Hallazgo)" />
+                </div>
+
+                @*Ruta*@
+                <div class="form-group">
+                    <label>Ruta</label>
+                    <InputText @bind-Value="Error.Ruta"
+                               class="form-control"></InputText>
+                    <ValidationMessage For="@(()=>Error.Ruta)" />
+                </div>
+
+                @*Importancia*@
+                <div class="form-group">
+                    <label>Importancia</label>
+                    <InputNumber @bind-Value="Error.Importancia"
+                                 class="form-control"></InputNumber>
+                    <ValidationMessage For="@(()=>Error.Importancia)" />
+                </div>
+            </form>
+        </div>
+
+        <div class="card-footer">
+            <div class="form-group text-center" display: inline-block>
+                <button type="button" class="btn btn-lg btn-primary" @onclick="Nuevo">Nuevo</button>
+                <button type="submit" class="btn btn-lg btn-success">Guardar</button>
+                <button type="button" class="btn btn-lg btn-danger" @onclick="Eliminar">Eliminar</button>
+            </div>
+
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int ErrorId { get; set; }
+
+    private Errores Error = new Errores();
+
+    protected override void OnInitialized()
+    {
+        Nuevo();
+        Buscar();
+    }
+
+    public void Nuevo()
+    {
+        Error = new Errores();
+    }
+
+    private void Buscar()
+    {
+        if (Error.ErrorId > 0)
+        {
+            var encontrado = ErroresBLL.Buscar(Error.ErrorId);
+
+            if (encontrado != null)
+                this.Error = encontrado;
+            else
+            {
+                Nuevo();
+                toast.ShowWarning("¡No encontrado!");
+            }
+
+        }
+    }
+
+    public void Guardar()
+    {
+        bool paso;
+        paso = ErroresBLL.Guardar(Error);
+
+        if (paso)
+        {
+            Nuevo();
+            toast.ShowSuccess("¡Guardado con éxito!");
+        }
+        else
+            toast.ShowError("¡No se pudo guardar!");
+    }
+
+    public void Eliminar()
+    {
+        bool elimino;
+
+        elimino = ErroresBLL.Eliminar(Error.ErrorId);
+
+        if (elimino)
+        {
+            Nuevo();
+            toast.ShowSuccess("¡Eliminado con éxito!");
+        }
+        else
+            toast.ShowError("¡No se pudo eliminar!");
+    }
+}
